@@ -1,0 +1,99 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="jp">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markov-Chain</title>
+    <link rel="stylesheet" href="{% static '../static/home.css' %}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="header">
+        <h1>Markov-Chain</h1>
+        <div class="today">
+            <p>Sunday, September 1, 2024<br>
+                Created by Yuta Morikawa</p>
+        </div>
+    </div>
+    <hr>
+    <hr>
+    <div class="information">
+        <p class="japanese">
+            このシステムでは、マルコフ連鎖をつかって、現在の状態から次の状態への遷移を確率的に決定することで、現実的なテキストの変化をシミュレーションします。Yahoo APIを用いて日本語の文章を形態素解析し、各単語ごとの遷移確率を計算し、モデルを構築します。このモデルを活用し、ランダムな名詞から始まる文章を自動生成することができます。
+            ただし、マルコフ連鎖は理論的に無限に続く可能性があるため、このシステムでは100単語以内の文章が生成されるように設定されています。また、Yahoo APIの制約上、一度に複数回リクエストすると使用できなくなる可能性があります。そのため、一度生成されたモデルは再利用し、「続けて生成」機能を利用することで、効率的に新しい文章を生成できます。
+        </p>
+        <p class="english">
+            This system uses Markov chains to probabilistically generate text transitions, creating realistic Japanese sentences. It employs the Yahoo API for morphological analysis, calculates word transition probabilities, and constructs a model to generate sentences starting with random nouns. To avoid infinite generation, sentences are limited to 100 words. Due to Yahoo API limitations, the model can be reused for efficient generation with a "continue generating" feature.
+        </p>
+    </div>
+    <hr>
+    <div class="generator">
+        <p class="ruby">The source text for generation</p>
+        <h2>生成元のテキスト</h2>
+        <form id="markovForm" method="post">
+            {% csrf_token %}
+            <textarea name="text_input" placeholder="テキストを入力"></textarea>
+            <div class="button-container">
+                <button type="button" id="generateNew">
+                    <img src="{% static '../static/generate.png' %}" alt="生成するアイコン">
+                    生成する
+                </button>
+                <button type="button" id="useExisting">
+                    <img src="{% static '../static/repeat.png'%}" alt="続けて生成アイコン">
+                    続けて生成
+                </button>
+                </div>
+        </form>
+        <p class="supplement">かならず一度生成したら元のテキストを変更しない限り、続けて生成を押してください</p>
+
+        <p class="ruby">After writing</p>
+        <h2>執筆後</h2>
+        <div class="result" id="result"></div><!-- 解析結果を表示するためのエリア -->
+    </div>
+
+    <div class="footer">
+        <p></p>
+        <span style="margin:15px 15px 15px 15px"><a href="https://developer.yahoo.co.jp/sitemap/">Webサービス by Yahoo! JAPAN</a></span>
+    </div>
+
+
+    <script>
+        $(document).ready(function () {
+            // 新しいモデルを生成ボタンがクリックされた場合
+            $('#generateNew').on('click', function (e) {
+                e.preventDefault();  // フォームのデフォルトの送信をキャンセル
+
+                $.ajax({
+                    type: 'POST',
+                    url: '',  // 現在のURLに送信
+                    data: $('#markovForm').serialize() + '&action=generateNew',  // アクションを追加して送信
+                    success: function (response) {
+                        $('#result').html(response);  // 成功時に結果を表示エリアに挿入
+                    },
+                    error: function (xhr, status, error) {
+                        $('#result').html("エラーが発生しました。");  // エラー時の処理
+                    }
+                });
+            });
+
+            // 既存のモデルを使用ボタンがクリックされた場合
+            $('#useExisting').on('click', function (e) {
+                e.preventDefault();  // フォームのデフォルトの送信をキャンセル
+
+                $.ajax({
+                    type: 'POST',
+                    url: '',  // 現在のURLに送信
+                    data: $('#markovForm').serialize() + '&action=useExisting',  // アクションを追加して送信
+                    success: function (response) {
+                        $('#result').html(response);  // 成功時に結果を表示エリアに挿入
+                    },
+                    error: function (xhr, status, error) {
+                        $('#result').html("エラーが発生しました。");  // エラー時の処理
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

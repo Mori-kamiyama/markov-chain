@@ -1,0 +1,15 @@
+# Pythonのキャッシュと仮想環境関連のファイル
+*.py[cod]
+__pycache__/
+*.so
+*.egg-info/
+.venv/
+venv/
+env/
+ENV/
+.env
+
+# OSまたはエディタ固有のファイル
+.DS_Store
+.idea/
+.vscode/
