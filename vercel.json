@@ -11,7 +11,6 @@
         "maxLambdaSize": "15mb",
         "runtime": "python3.9"
       },
-      "buildCommand": "pip install -r requirements.txt && python manage.py collectstatic --noinput"
     }
   ],
   "routes": [
