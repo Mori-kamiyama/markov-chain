@@ -11,6 +11,7 @@ import logging
 APPID = settings.YAHOO_APP_ID
 URL = "https://jlp.yahooapis.jp/MAService/V2/parse"
 
+
 def Analysis(request):
     """
     ユーザー入力を解析するためにYahooのMAService APIを呼び出す関数。
@@ -44,10 +45,12 @@ def Analysis(request):
         logging.error(f"APIリクエスト中のエラー: {e}")
         return None
 
+
 class JsonHandler:
     """
     JSONレスポンスを処理しやすくするためのヘルパークラス。
     """
+
     def __init__(self, json_object):
         self.tokens = json_object.get("result", {}).get("tokens", [])
 
@@ -55,6 +58,7 @@ class JsonHandler:
         if n < len(self.tokens):
             return self.tokens[n][0]
         return "\n"
+
 
 def ModelGeneration(json_object):
     """
@@ -83,6 +87,7 @@ def ModelGeneration(json_object):
 
     return model
 
+
 def FindStart(json_object, num):
     """
     主語を探す関数。
@@ -94,6 +99,7 @@ def FindStart(json_object, num):
             noun.append(word[0])
 
     return noun
+
 
 def GenerationText(model, start):
     """
@@ -127,6 +133,7 @@ def GenerationText(model, start):
     generate_text = "".join(text)
     return generate_text
 
+
 def home(request):
     """
     ホーム画面のビュー関数。ユーザー入力を受け取って解析し、文を生成する。
@@ -141,20 +148,35 @@ def home(request):
         num = len(json_response.get("result", {}).get("tokens", []))
 
         if action == 'generateNew':
+            # 新しいモデルを生成し、モデルを保存
             model = ModelGeneration(json_response)
-            response = HttpResponse("新しいモデルを生成しました。")
+            response = HttpResponse()  # 一時的なレスポンスを作成
             response.set_cookie('markov_model', json.dumps(model), max_age=3600)  # クッキーにモデルを保存
+
+            # 生成したモデルを使ってテキストを生成
+            norn = FindStart(json_response, num)
+            text = GenerationText(model, norn)
+
+            # 結果を表示
+            response.content = f'新しいモデルを生成しました。\n生成された文: {text}'
             return response
 
         elif action == 'useExisting':
+            # クッキーから既存のモデルを取得
             model_cookie = request.COOKIES.get('markov_model')
             if not model_cookie:
                 return HttpResponse("既存のモデルが見つかりません。新しいモデルを生成してください。")
 
+            # クッキーからモデルを読み込む
             model = json.loads(model_cookie)
 
+        # 名詞を探す
         norn = FindStart(json_response, num)
+
+        # 文を生成
         text = GenerationText(model, norn)
-        return HttpResponse(f'{text}')
+
+        # 結果を表示
+        return HttpResponse(f'生成された文: {text}')
 
     return render(request, 'home.html')
