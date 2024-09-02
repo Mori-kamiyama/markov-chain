@@ -162,6 +162,9 @@ def home(request):
             model = ModelGeneration(json_response)
             response = HttpResponse()
 
+            # 既存のクッキーを削除
+            response.delete_cookie('markov_model')
+
             # モデルを圧縮してクッキーに保存
             compressed_model = compress_data(model)
             response.set_cookie('markov_model', compressed_model, max_age=3600, httponly=True)
@@ -187,23 +190,6 @@ def home(request):
             except (json.JSONDecodeError, zlib.error, base64.binascii.Error) as e:
                 logging.error(f"クッキーからモデルを読み込む際のエラー: {e}")
                 return HttpResponse("モデルを読み込む際にエラーが発生しました。新しいモデルを生成してください。")
-
-            # 名詞を探す
-            norn = FindStart(model)
-
-            # 文を生成
-            text = GenerationText(model, norn)
-
-            # 結果を表示
-            return HttpResponse(f'<b>生成された文:</b><br />{text}')
-
-        elif action == 'generateOnly':
-            # 新しいモデルを生成するが、クッキーとして保存しない
-            json_response = Analysis(request)
-            if not json_response:
-                return HttpResponse("リクエストの処理中にエラーが発生しました。")
-
-            model = ModelGeneration(json_response)
 
             # 名詞を探す
             norn = FindStart(model)
