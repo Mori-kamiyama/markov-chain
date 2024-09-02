@@ -5,6 +5,8 @@ from random import randrange
 from urllib import request as url_request
 from django.http import HttpResponse
 from django.conf import settings
+import zlib
+import base64
 import logging
 
 # settingsを使用してAPPIDを安全に取得
@@ -133,10 +135,21 @@ def GenerationText(model, start):
     return generate_text
 
 
+def compress_data(data):
+    # JSON文字列を圧縮してBase64でエンコード
+    json_str = json.dumps(data)
+    compressed_data = zlib.compress(json_str.encode('utf-8'))
+    return base64.b64encode(compressed_data).decode('utf-8')
+
+
+def decompress_data(data):
+    # Base64でデコードしてから解凍してJSONとして読み込む
+    compressed_data = base64.b64decode(data.encode('utf-8'))
+    json_str = zlib.decompress(compressed_data).decode('utf-8')
+    return json.loads(json_str)
+
+
 def home(request):
-    """
-    ホーム画面のビュー関数。ユーザー入力を受け取って解析し、文を生成する。
-    """
     if request.method == 'POST':
         action = request.POST.get('action')
 
@@ -146,12 +159,12 @@ def home(request):
             if not json_response:
                 return HttpResponse("リクエストの処理中にエラーが発生しました。")
 
-            num = len(json_response.get("result", {}).get("tokens", []))
             model = ModelGeneration(json_response)
-            response = HttpResponse()  # 一時的なレスポンスを作成
-            # クッキーにモデルを保存（圧縮することを考慮）
-            model_data = json.dumps(model)
-            response.set_cookie('markov_model', model_data, max_age=3600, httponly=True)
+            response = HttpResponse()
+
+            # モデルを圧縮してクッキーに保存
+            compressed_model = compress_data(model)
+            response.set_cookie('markov_model', compressed_model, max_age=3600, httponly=True)
 
             # 生成したモデルを使ってテキストを生成
             norn = FindStart(model)
@@ -165,13 +178,13 @@ def home(request):
             # クッキーから既存のモデルを取得
             model_cookie = request.COOKIES.get('markov_model')
             if not model_cookie:
-                logging.info("既存のモデルがクッキーから見つかりません。")  # ログに出力
+                logging.info("既存のモデルがクッキーから見つかりません。")
                 return HttpResponse("既存のモデルが見つかりません。新しいモデルを生成してください。")
 
-            # クッキーからモデルを読み込む（例外処理を追加）
+            # クッキーからモデルをデシリアライズ（解凍）する
             try:
-                model = json.loads(model_cookie)
-            except json.JSONDecodeError as e:
+                model = decompress_data(model_cookie)
+            except (json.JSONDecodeError, zlib.error, base64.binascii.Error) as e:
                 logging.error(f"クッキーからモデルを読み込む際のエラー: {e}")
                 return HttpResponse("モデルを読み込む際にエラーが発生しました。新しいモデルを生成してください。")
 
@@ -184,7 +197,6 @@ def home(request):
             # 結果を表示
             return HttpResponse(f'生成された文: {text}')
 
-    # クッキーをデバッグ用にログに出力
     logging.info(f"クッキー情報: {request.COOKIES}")
 
     return render(request, 'home.html')
