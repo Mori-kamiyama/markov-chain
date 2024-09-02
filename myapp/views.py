@@ -88,16 +88,12 @@ def ModelGeneration(json_object):
     return model
 
 
-def FindStart(json_object, num):
+def FindStart(model):
     """
-    主語を探す関数。
+    モデル内の名詞（文の開始候補）を探す関数。
     """
-    noun = []
-    for n in range(num):
-        word = json_object["result"]["tokens"][n]
-        if word[3] in "名詞" and word[4] in "普通名詞":
-            noun.append(word[0])
-
+    # モデルのキー（単語）のリストから開始候補となる単語を探す
+    noun = [word for word in model.keys() if len(word) > 1]  # 短すぎる単語を除外する
     return noun
 
 
@@ -105,6 +101,9 @@ def GenerationText(model, start):
     """
     続きを生成する関数。
     """
+    if not start:
+        return "モデルに開始できる名詞が見つかりませんでした。"
+
     randam = randrange(len(start))
     sentence_start = start[randam]
 
@@ -141,20 +140,19 @@ def home(request):
     if request.method == 'POST':
         action = request.POST.get('action')
 
-        json_response = Analysis(request)
-        if not json_response:
-            return HttpResponse("リクエストの処理中にエラーが発生しました。")
-
-        num = len(json_response.get("result", {}).get("tokens", []))
-
         if action == 'generateNew':
             # 新しいモデルを生成し、モデルを保存
+            json_response = Analysis(request)
+            if not json_response:
+                return HttpResponse("リクエストの処理中にエラーが発生しました。")
+
+            num = len(json_response.get("result", {}).get("tokens", []))
             model = ModelGeneration(json_response)
             response = HttpResponse()  # 一時的なレスポンスを作成
             response.set_cookie('markov_model', json.dumps(model), max_age=3600)  # クッキーにモデルを保存
 
             # 生成したモデルを使ってテキストを生成
-            norn = FindStart(json_response, num)
+            norn = FindStart(model)
             text = GenerationText(model, norn)
 
             # 結果を表示
@@ -170,13 +168,13 @@ def home(request):
             # クッキーからモデルを読み込む
             model = json.loads(model_cookie)
 
-        # 名詞を探す
-        norn = FindStart(json_response, num)
+            # 名詞を探す
+            norn = FindStart(model)
 
-        # 文を生成
-        text = GenerationText(model, norn)
+            # 文を生成
+            text = GenerationText(model, norn)
 
-        # 結果を表示
-        return HttpResponse(f'生成された文: {text}')
+            # 結果を表示
+            return HttpResponse(f'生成された文: {text}')
 
     return render(request, 'home.html')
