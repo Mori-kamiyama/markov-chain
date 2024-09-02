@@ -171,7 +171,7 @@ def home(request):
             text = GenerationText(model, norn)
 
             # 結果を表示
-            response.content = f'新しいモデルを生成しました。\n生成された文: {text}'
+            response.content = f'<b>新しいモデルを生成しました。\n生成された文: </b><br> {text}'
             return response
 
         elif action == 'useExisting':
@@ -195,7 +195,7 @@ def home(request):
             text = GenerationText(model, norn)
 
             # 結果を表示
-            return HttpResponse(f'生成された文: {text}')
+            return HttpResponse(f'<b>生成された文:</b><br />{text}')
 
     logging.info(f"クッキー情報: {request.COOKIES}")
 
