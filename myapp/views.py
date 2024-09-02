@@ -6,6 +6,8 @@ from urllib import request as url_request
 from django.http import HttpResponse
 from django.conf import settings
 import logging
+from django.shortcuts import render
+
 
 from django.template.defaulttags import do_if
 from django.utils.lorem_ipsum import sentence
@@ -157,21 +159,42 @@ def GenerationText(model, start):#続きを生成する
     print(generate_text)
     return generate_text
 
+
 def home(request):
-    """
-    ホームページを表示し、POSTリクエストがあった場合は解析結果を表示するビュー関数。
-    :param request: DjangoのHTTPリクエストオブジェクト
-    :return: HttpResponseまたはレンダリングされたテンプレート
-    """
     if request.method == 'POST':
-        action = request.POST.get('action')  # どちらのボタンがクリックされたかを取得
+        action = request.POST.get('action')
 
         # ユーザーの入力を解析する
         json_response = Analysis(request)
+        if not json_response:
+            return HttpResponse("リクエストの処理中にエラーが発生しました。")
 
+        num = len(json_response.get("result", {}).get("tokens", []))
+
+        if action == 'generateNew':
+            # 新しいモデルを生成
+            model = ModelGeneration(json_response)
+            # モデルをクッキーに保存 (文字列としてエンコード)
+            response = HttpResponse("新しいモデルを生成しました。")
+            response.set_cookie('markov_model', json.dumps(model), max_age=3600)  # 有効期限を設定 (例: 1時間)
+            return response
+
+        elif action == 'useExisting':
+            # クッキーから既存のモデルを取得
+            model_cookie = request.COOKIES.get('markov_model')
+            if not model_cookie:
+                return HttpResponse("既存のモデルが見つかりません。新しいモデルを生成してください。")
+
+            # クッキーからモデルを読み込む
+            model = json.loads(model_cookie)
+
+        # 名詞を探す
+        norn = FindStart(json_response, num)
+
+        # 文を生成
+        text = GenerationText(model, norn)
 
         # 結果を表示
-        return HttpResponse(f'{json_response}')
+        return HttpResponse(f'{text}')
 
-    # GETリクエストの場合、ホームページをレンダリング
     return render(request, 'home.html')
