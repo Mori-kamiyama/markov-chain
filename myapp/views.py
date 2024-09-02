@@ -149,7 +149,9 @@ def home(request):
             num = len(json_response.get("result", {}).get("tokens", []))
             model = ModelGeneration(json_response)
             response = HttpResponse()  # 一時的なレスポンスを作成
-            response.set_cookie('markov_model', json.dumps(model), max_age=3600)  # クッキーにモデルを保存
+            # クッキーにモデルを保存（圧縮することを考慮）
+            model_data = json.dumps(model)
+            response.set_cookie('markov_model', model_data, max_age=3600, httponly=True)
 
             # 生成したモデルを使ってテキストを生成
             norn = FindStart(model)
@@ -166,8 +168,12 @@ def home(request):
                 logging.info("既存のモデルがクッキーから見つかりません。")  # ログに出力
                 return HttpResponse("既存のモデルが見つかりません。新しいモデルを生成してください。")
 
-            # クッキーからモデルを読み込む
-            model = json.loads(model_cookie)
+            # クッキーからモデルを読み込む（例外処理を追加）
+            try:
+                model = json.loads(model_cookie)
+            except json.JSONDecodeError as e:
+                logging.error(f"クッキーからモデルを読み込む際のエラー: {e}")
+                return HttpResponse("モデルを読み込む際にエラーが発生しました。新しいモデルを生成してください。")
 
             # 名詞を探す
             norn = FindStart(model)
@@ -182,3 +188,4 @@ def home(request):
     logging.info(f"クッキー情報: {request.COOKIES}")
 
     return render(request, 'home.html')
+
