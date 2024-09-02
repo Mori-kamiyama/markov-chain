@@ -104,46 +104,39 @@ textarea,
 }
 
 button {
-    width: 180px;
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    font-size: 1.2em;
-    font-family: "Inter Semi Bold", sans-serif;
-    background-color: #fff;
-    border: #808080 1px solid;
-    border-radius: 15px;
-    padding: 0 10px;
-    cursor: pointer;
-    transition: all 0.3s ease;
+  width: 180px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 1.2em;
+  font-family: "Inter Semi Bold", sans-serif;
+  background-color: #fff;
+  border: #808080 1px solid;
+  border-radius: 15px;
+  padding: 0 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 button:hover {
-    background-color: #252525;
-    color: #fff;
-    transform: translateY(-2px);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  background-color: #252525;
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 button:active {
-    background-color: #000000;
-    color: #fff;
-    transform: translateY(0);
-    box-shadow: none;
+  background-color: #000000;
+  color: #fff;
+  transform: translateY(0);
+  box-shadow: none;
 }
 
-img {
-    width: 30px;
-    height: 30px;
-    display: block;
-    filter: invert(0);
-    transition: filter 0.3s ease;
-}
-
-button:hover img, button:active img {
-    filter: invert(1);
+button:hover .st0,
+button:active .st0 {
+  fill: #ffffff;
 }
 
 .footer {
@@ -151,7 +144,14 @@ button:hover img, button:active img {
 }
 
 /* Media Queries for Responsive Design */
-
+        
+svg {
+  height: auto; /* アスペクト比を維持 */
+  width: 30px; /* 最大幅 */
+  transition: fill 0.3s ease; /* 滑らかな遷移 */
+}
+        
+        
 @media (max-width: 1200px) {
     .information {
         grid-template-columns: 1fr; /* Stack columns on smaller screens */
@@ -228,12 +228,50 @@ button:hover img, button:active img {
             <textarea name="text_input" placeholder="テキストを入力"></textarea>
             <div class="button-container">
                 <button type="button" id="generateNew">
-                    <img src="{% static 'generate.svg' %}" alt="生成するアイコン">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <style type="text/css">
+                            .st0 {
+                                fill: #000000; /* 初期の塗りつぶし色 */
+                                transition: fill 0.3s ease; /* 滑らかな塗りつぶしの遷移 */
+                            }
+                        </style>
+                      <g>
+                        <path class="st0" d="M168.917,337.93l-33.047-33.047c-19.906,11.938-63.891,31.625-63.891,31.625 c-9.953,4.125-17.125,13.016-19.031,23.609l-22.266,103.75l-12.766,12.781c-4.609-0.063-9.234,1.656-12.734,5.172 c-6.906,6.891-6.906,18.094,0,25s18.109,6.906,25.016,0c3.5-3.516,5.219-8.125,5.156-12.734l12.781-12.766l103.75-22.266 c10.594-1.906,19.484-9.078,23.609-19.031c0,0,19.703-43.953,31.641-63.875l-33.047-33.047L168.917,337.93z M133.183,406.133 c-7.547,7.531-19.781,7.531-27.313,0c-7.547-7.547-7.547-19.766,0-27.313c7.531-7.547,19.766-7.547,27.313,0 C140.714,386.368,140.714,398.586,133.183,406.133z"></path>
+                        <polygon class="st0" points="184.495,327.102 180.87,323.493 176.526,319.149"></polygon>
+                        <path class="st0" d="M170.964,270.571c-7.969,7.969-18.313,5.578-18.313,5.578l-9.563,9.547l37.781,37.797l45.438,45.422 l9.547-9.547c0,0-2.391-10.359,5.578-18.328c7.953-7.953,32.641-32.641,32.641-32.641l-70.469-70.469 C203.604,237.93,178.917,262.602,170.964,270.571z"></path>
+                        <path class="st0" d="M489.464,22.54c-32.578-32.578-68.109-29.609-105.125,7.406S240.87,199.461,215.792,224.54l71.656,71.672 c25.094-25.078,157.594-131.531,194.609-168.547S522.026,55.118,489.464,22.54z M457.136,80.04L345.589,191.586 c-2.719,2.719-7.141,2.719-9.859,0l-15.313-15.297c-2.719-2.734-2.719-7.156,0-9.875L431.964,54.868 c2.719-2.734,7.141-2.734,9.875,0l15.297,15.297C459.854,72.899,459.854,77.321,457.136,80.04z"></path>
+                      </g>
+                    </svg>
                     生成する
                 </button>
                 <button type="button" id="useExisting">
-                    <img src="{% static 'repeat.svg' %}" alt="続けて生成アイコン">
-                    続けて生成
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                    <style type="text/css">
+                      .st0 {
+                        fill: #000000; /* 初期の塗りつぶし色 */
+                        transition: fill 0.3s ease; /* 滑らかな塗りつぶしの遷移 */
+                      }
+                    </style>
+                    <g>
+                      <path class="st0" d="M499.795,195.596c-11.804-27.884-31.438-51.515-56.186-68.24c-24.717-16.724-54.739-26.526-86.773-26.518
+                        h-44.222l10.195-24.234c1.335-3.176,0.531-6.834-1.994-9.158c-2.541-2.316-6.255-2.798-9.295-1.19l-108.932,57.578
+                        c-2.67,1.399-4.342,4.173-4.326,7.18c0,3.015,1.656,5.797,4.326,7.189l108.932,57.585c3.023,1.608,6.738,1.126,9.279-1.181
+                        c2.541-2.324,3.344-5.991,2.01-9.158l-10.211-24.266h44.238c13.187,0.008,25.569,2.654,36.906,7.438
+                        c16.982,7.172,31.518,19.24,41.746,34.389c10.228,15.172,16.161,33.248,16.177,52.994c-0.016,13.17-2.653,25.569-7.445,36.89
+                        c-7.172,16.982-19.232,31.518-34.381,41.746c-15.18,10.228-33.255,16.161-53.003,16.177v60.344c21.34,0,41.827-4.342,60.416-12.206
+                        c27.869-11.803,51.508-31.438,68.231-56.178c16.725-24.732,26.534-54.748,26.518-86.773
+                        C512,234.665,507.658,214.178,499.795,195.596z"></path>
+                      <path class="st0" d="M309.413,373.796l-108.932-57.585c-3.023-1.608-6.738-1.126-9.278,1.182c-2.541,2.324-3.345,5.998-2.01,9.158
+                        l10.211,24.265h-44.238c-13.187-0.008-25.569-2.653-36.906-7.437c-16.982-7.172-31.518-19.24-41.746-34.389
+                        c-10.228-15.164-16.161-33.247-16.178-52.986c0.016-13.178,2.654-25.576,7.445-36.897c7.172-16.982,19.234-31.519,34.381-41.747
+                        c15.18-10.227,33.256-16.16,53.003-16.177v-60.344c-21.339,0-41.827,4.342-60.416,12.205
+                        c-27.869,11.804-51.508,31.439-68.231,56.187C9.793,193.956-0.016,223.971,0,256.004c0,21.34,4.342,41.818,12.205,60.4
+                        c11.804,27.885,31.438,51.516,56.187,68.24c24.716,16.724,54.74,26.526,86.773,26.518h44.222l-10.195,24.234
+                        c-1.335,3.176-0.53,6.842,1.994,9.158c2.541,2.315,6.256,2.798,9.295,1.19l108.932-57.57c2.669-1.407,4.342-4.181,4.326-7.188
+                        C313.739,377.97,312.082,375.188,309.413,373.796z"></path>
+                    </g>
+                  </svg>
+                  続けて生成
                 </button>
             </div>
         </form>

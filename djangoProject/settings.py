@@ -123,17 +123,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 
-# プロジェクトのルートディレクトリ内にある 'static' フォルダを指定
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
-
-
-# メディアファイルのURL
-MEDIA_URL = '/media/'
-
-# メディアファイルの保存ディレクトリ
-MEDIA_ROOT = BASE_DIR / "media"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
