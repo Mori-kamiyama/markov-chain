@@ -168,32 +168,10 @@ def home(request):
 
         # ユーザーの入力を解析する
         json_response = Analysis(request)
-        if not json_response:
-            return HttpResponse("リクエストの処理中にエラーが発生しました。")
 
-        # トークンの数を取得
-        num = len(json_response.get("result", {}).get("tokens", []))
-
-        if action == 'generateNew':
-            # 新しいモデルを生成し、セッションに保存
-            model = ModelGeneration(json_response)
-            request.session['markov_model'] = json.dumps(model)  # JSON形式で保存
-
-        elif action == 'useExisting':
-            # 既存のモデルを使用
-            if 'markov_model' in request.session:
-                model = json.loads(request.session['markov_model'])
-            else:
-                return HttpResponse("既存のモデルが見つかりません。新しいモデルを生成してください。")
-
-        # 名詞を探す
-        norn = FindStart(json_response, num)
-
-        # 文を生成
-        text = GenerationText(model, norn)
 
         # 結果を表示
-        return HttpResponse(f'{text}')
+        return HttpResponse(f'{json_response}')
 
     # GETリクエストの場合、ホームページをレンダリング
     return render(request, 'home.html')
