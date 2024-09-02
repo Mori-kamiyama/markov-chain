@@ -197,6 +197,23 @@ def home(request):
             # 結果を表示
             return HttpResponse(f'<b>生成された文:</b><br />{text}')
 
+        elif action == 'generateOnly':
+            # 新しいモデルを生成するが、クッキーとして保存しない
+            json_response = Analysis(request)
+            if not json_response:
+                return HttpResponse("リクエストの処理中にエラーが発生しました。")
+
+            model = ModelGeneration(json_response)
+
+            # 名詞を探す
+            norn = FindStart(model)
+
+            # 文を生成
+            text = GenerationText(model, norn)
+
+            # 結果を表示
+            return HttpResponse(f'<b>生成された文:</b><br />{text}')
+
     logging.info(f"クッキー情報: {request.COOKIES}")
 
     return render(request, 'home.html')
