@@ -163,6 +163,7 @@ def home(request):
             # クッキーから既存のモデルを取得
             model_cookie = request.COOKIES.get('markov_model')
             if not model_cookie:
+                logging.info("既存のモデルがクッキーから見つかりません。")  # ログに出力
                 return HttpResponse("既存のモデルが見つかりません。新しいモデルを生成してください。")
 
             # クッキーからモデルを読み込む
@@ -176,5 +177,8 @@ def home(request):
 
             # 結果を表示
             return HttpResponse(f'生成された文: {text}')
+
+    # クッキーをデバッグ用にログに出力
+    logging.info(f"クッキー情報: {request.COOKIES}")
 
     return render(request, 'home.html')
