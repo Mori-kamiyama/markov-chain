@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Markov-Chain</title>
-    <link rel="stylesheet" href="{% static '../static/home.css' %}">
+    <link rel="stylesheet" href="{% static 'public/staticfiles/home.css' %}">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
@@ -36,11 +36,11 @@
             <textarea name="text_input" placeholder="テキストを入力"></textarea>
             <div class="button-container">
                 <button type="button" id="generateNew">
-                    <img src="{% static '../static/generate.png' %}" alt="生成するアイコン">
+                    <img src="{% static 'public/staticfiles/generate.png' %}" alt="生成するアイコン">
                     生成する
                 </button>
                 <button type="button" id="useExisting">
-                    <img src="{% static '../static/repeat.png'%}" alt="続けて生成アイコン">
+                    <img src="{% static 'puclic/staticfiles/repeat.png'%}" alt="続けて生成アイコン">
                     続けて生成
                 </button>
                 </div>
