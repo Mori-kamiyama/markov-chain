@@ -329,6 +329,23 @@ svg {
                     }
                 });
             });
+            
+            // 長文使用ボタンがクリックされた場合
+            $('#generateOnly').on('click', function (e) {
+                e.preventDefault();  // フォームのデフォルトの送信をキャンセル
+
+                $.ajax({
+                    type: 'POST',
+                    url: '',  // 現在のURLに送信
+                    data: $('#markovForm').serialize() + '&action=generateOnly',  // アクションを追加して送信
+                    success: function (response) {
+                        $('#result').html(response);  // 成功時に結果を表示エリアに挿入
+                    },
+                    error: function (xhr, status, error) {
+                        $('#result').html("エラーが発生しました。");  // エラー時の処理
+                    }
+                });
+            });
 
             // 既存のモデルを使用ボタンがクリックされた場合
             $('#useExisting').on('click', function (e) {
