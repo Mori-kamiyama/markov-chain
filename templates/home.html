@@ -212,10 +212,10 @@ svg {
     <div class="information">
         <p class="japanese">
             このシステムでは、マルコフ連鎖をつかって、現在の状態から次の状態への遷移を確率的に決定することで、現実的なテキストの変化をシミュレーションします。Yahoo APIを用いて日本語の文章を形態素解析し、各単語ごとの遷移確率を計算し、モデルを構築します。このモデルを活用し、ランダムな名詞から始まる文章を自動生成することができます。
-            ただし、マルコフ連鎖は理論的に無限に続く可能性があるため、このシステムでは100単語以内の文章が生成されるように設定されています。また、Yahoo APIの制約上、一度に複数回リクエストすると使用できなくなる可能性があります。そのため、一度生成されたモデルは再利用し、「続けて生成」機能を利用することで、効率的に新しい文章を生成できます。
+            ただし、マルコフ連鎖は理論的に無限に続く可能性があるため、このシステムでは100単語以内の文章が生成されるように設定されています。また、Yahoo APIの制約上、一度に複数回リクエストすると使用できなくなる可能性があります。そのため、一度生成されたモデルは再利用し、「続けて生成」機能を利用することで、効率的に新しい文章を生成できます。また、モデルの保存にはcookieを使用しています。
         </p>
         <p class="english">
-            This system uses Markov chains to probabilistically generate text transitions, creating realistic Japanese sentences. It employs the Yahoo API for morphological analysis, calculates word transition probabilities, and constructs a model to generate sentences starting with random nouns. To avoid infinite generation, sentences are limited to 100 words. Due to Yahoo API limitations, the model can be reused for efficient generation with a "continue generating" feature.
+            This system uses Markov chains to probabilistically generate text transitions, creating realistic Japanese sentences. It employs the Yahoo API for morphological analysis, calculates word transition probabilities, and constructs a model to generate sentences starting with random nouns. To avoid infinite generation, sentences are limited to 100 words. Due to Yahoo API limitations, the model can be reused for efficient generation with a 'continue generating' feature. Additionally, cookies are used to save the model.
         </p>
     </div>
     <hr>
